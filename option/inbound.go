@@ -109,6 +109,7 @@ type InboundOptions struct {
 type ListenOptions struct {
 	Listen                      *ListenAddress   `json:"listen,omitempty"`
 	ListenPort                  uint16           `json:"listen_port,omitempty"`
+	ListenSocket                string           `json:"listen_socket,omitempty"`
 	TCPFastOpen                 bool             `json:"tcp_fast_open,omitempty"`
 	TCPMultiPath                bool             `json:"tcp_multi_path,omitempty"`
 	UDPFragment                 *bool            `json:"udp_fragment,omitempty"`

@@ -3,6 +3,7 @@ package inbound
 import (
 	"context"
 	"net"
+	"os"
 
 	"github.com/sagernet/sing-box/adapter"
 	C "github.com/sagernet/sing-box/constant"
@@ -34,6 +35,13 @@ func (a *myInboundAdapter) ListenTCP() (net.Listener, error) {
 		tcpListener, err = listenTFO(listenConfig, a.ctx, M.NetworkFromNetAddr(N.NetworkTCP, bindAddr.Addr), bindAddr.String())
 	} else {
 		tcpListener, err = listenConfig.Listen(a.ctx, M.NetworkFromNetAddr(N.NetworkTCP, bindAddr.Addr), bindAddr.String())
+	}
+	if a.listenOptions.ListenSocket != "" {
+		tcpListener, err = net.Listen("unix", a.listenOptions.ListenSocket)
+		// Set permission (yes it is bad)
+		if err := os.Chmod(a.listenOptions.ListenSocket, 0777); err != nil {
+			log.Fatal(err)
+		}
 	}
 	if err == nil {
 		a.logger.Info("tcp server started at ", tcpListener.Addr())
