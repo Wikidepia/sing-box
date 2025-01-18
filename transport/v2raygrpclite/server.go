@@ -59,10 +59,6 @@ func (s *Server) ServeHTTP(writer http.ResponseWriter, request *http.Request) {
 		s.h2cHandler.ServeHTTP(writer, request)
 		return
 	}
-	if request.URL.Path != s.path {
-		s.invalidRequest(writer, request, http.StatusNotFound, E.New("bad path: ", request.URL.Path))
-		return
-	}
 	if request.Method != http.MethodPost {
 		s.invalidRequest(writer, request, http.StatusNotFound, E.New("bad method: ", request.Method))
 		return

@@ -64,12 +64,6 @@ func NewServer(ctx context.Context, options option.V2RayWebsocketOptions, tlsCon
 }
 
 func (s *Server) ServeHTTP(writer http.ResponseWriter, request *http.Request) {
-	if s.maxEarlyData == 0 || s.earlyDataHeaderName != "" {
-		if request.URL.Path != s.path {
-			s.invalidRequest(writer, request, http.StatusNotFound, E.New("bad path: ", request.URL.Path))
-			return
-		}
-	}
 	var (
 		earlyData []byte
 		err       error
@@ -79,15 +73,8 @@ func (s *Server) ServeHTTP(writer http.ResponseWriter, request *http.Request) {
 		if strings.HasPrefix(request.URL.RequestURI(), s.path) {
 			earlyDataStr := request.URL.RequestURI()[len(s.path):]
 			earlyData, err = base64.RawURLEncoding.DecodeString(earlyDataStr)
-		} else {
-			s.invalidRequest(writer, request, http.StatusNotFound, E.New("bad path: ", request.URL.Path))
-			return
 		}
 	} else {
-		if request.URL.Path != s.path {
-			s.invalidRequest(writer, request, http.StatusNotFound, E.New("bad path: ", request.URL.Path))
-			return
-		}
 		earlyDataStr := request.Header.Get(s.earlyDataHeaderName)
 		if earlyDataStr != "" {
 			earlyData, err = base64.RawURLEncoding.DecodeString(earlyDataStr)

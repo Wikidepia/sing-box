@@ -65,10 +65,6 @@ func (s *Server) ServeHTTP(writer http.ResponseWriter, request *http.Request) {
 		s.invalidRequest(writer, request, http.StatusBadRequest, E.New("bad host: ", host))
 		return
 	}
-	if request.URL.Path != s.path {
-		s.invalidRequest(writer, request, http.StatusNotFound, E.New("bad path: ", request.URL.Path))
-		return
-	}
 	if request.Method != http.MethodGet {
 		s.invalidRequest(writer, request, http.StatusNotFound, E.New("bad method: ", request.Method))
 		return
