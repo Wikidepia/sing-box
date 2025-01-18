@@ -10,10 +10,11 @@ import (
 	"github.com/sagernet/sing-box/common/tls"
 	"github.com/sagernet/sing-box/common/uot"
 	C "github.com/sagernet/sing-box/constant"
+	"github.com/sagernet/sing-box/extra"
 	"github.com/sagernet/sing-box/log"
 	"github.com/sagernet/sing-box/option"
 	"github.com/sagernet/sing-box/transport/v2ray"
-	"github.com/sagernet/sing-vmess"
+	vmess "github.com/sagernet/sing-vmess"
 	"github.com/sagernet/sing-vmess/packetaddr"
 	"github.com/sagernet/sing-vmess/vless"
 	"github.com/sagernet/sing/common"
@@ -159,6 +160,15 @@ func (h *VLESS) newConnection(ctx context.Context, conn net.Conn, metadata adapt
 	} else {
 		metadata.User = user
 	}
+
+	// EXTRA: Add connection to user
+	if extra.LenUser(user) > 3 {
+		h.logger.InfoContext(ctx, "[", user, "] inbound connection from ", metadata.Source, " max limit reached")
+		conn.Close()
+		return os.ErrInvalid
+	}
+	extra.AddConnection(user, metadata.Source.Addr.String())
+
 	h.logger.InfoContext(ctx, "[", user, "] inbound connection to ", metadata.Destination)
 	return h.router.RouteConnection(ctx, conn, metadata)
 }

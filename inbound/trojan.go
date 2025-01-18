@@ -9,6 +9,7 @@ import (
 	"github.com/sagernet/sing-box/common/mux"
 	"github.com/sagernet/sing-box/common/tls"
 	C "github.com/sagernet/sing-box/constant"
+	"github.com/sagernet/sing-box/extra"
 	"github.com/sagernet/sing-box/log"
 	"github.com/sagernet/sing-box/option"
 	"github.com/sagernet/sing-box/transport/trojan"
@@ -180,6 +181,15 @@ func (h *Trojan) newConnection(ctx context.Context, conn net.Conn, metadata adap
 	} else {
 		metadata.User = user
 	}
+
+	// EXTRA: Add connection to user
+	if extra.LenUser(user) > 3 {
+		h.logger.InfoContext(ctx, "[", user, "] inbound connection from ", metadata.Source, " max limit reached")
+		conn.Close()
+		return os.ErrInvalid
+	}
+	extra.AddConnection(user, metadata.Source.Addr.String())
+
 	h.logger.InfoContext(ctx, "[", user, "] inbound connection to ", metadata.Destination)
 	return h.router.RouteConnection(ctx, conn, metadata)
 }

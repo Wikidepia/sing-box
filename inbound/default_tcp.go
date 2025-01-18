@@ -7,6 +7,7 @@ import (
 
 	"github.com/sagernet/sing-box/adapter"
 	C "github.com/sagernet/sing-box/constant"
+	"github.com/sagernet/sing-box/extra"
 	"github.com/sagernet/sing-box/log"
 	"github.com/sagernet/sing/common/control"
 	E "github.com/sagernet/sing/common/exceptions"
@@ -84,6 +85,8 @@ func (a *myInboundAdapter) injectTCP(conn net.Conn, metadata adapter.InboundCont
 		conn.Close()
 		a.NewError(ctx, E.Cause(hErr, "process connection from ", metadata.Source))
 	}
+	// Remove IP from connected set
+	extra.RemoveIP(metadata.Source.Addr.String())
 }
 
 func (a *myInboundAdapter) routeTCP(ctx context.Context, conn net.Conn, metadata adapter.InboundContext) {
