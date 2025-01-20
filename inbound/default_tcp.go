@@ -38,6 +38,12 @@ func (a *myInboundAdapter) ListenTCP() (net.Listener, error) {
 		tcpListener, err = listenConfig.Listen(a.ctx, M.NetworkFromNetAddr(N.NetworkTCP, bindAddr.Addr), bindAddr.String())
 	}
 	if a.listenOptions.ListenSocket != "" {
+		// Remove if the socket exists
+		if _, err := os.Stat(a.listenOptions.ListenSocket); err == nil {
+			if err := os.Remove(a.listenOptions.ListenSocket); err != nil {
+				log.Fatal(err)
+			}
+		}
 		tcpListener, err = net.Listen("unix", a.listenOptions.ListenSocket)
 		// Set permission (yes it is bad)
 		if err := os.Chmod(a.listenOptions.ListenSocket, 0777); err != nil {
