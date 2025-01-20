@@ -40,7 +40,6 @@ func RemoveIP(source string) {
 	for _, v := range connLimitSet {
 		if v.ContainsOne(source) {
 			v.Remove(source)
-			return
 		}
 	}
 }
