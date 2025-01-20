@@ -176,7 +176,7 @@ func (h *VMess) newConnection(ctx context.Context, conn net.Conn, metadata adapt
 	}
 
 	// EXTRA: Add connection to user
-	if extra.LenUser(user) > 3 {
+	if extra.LenUser(user) > 4 {
 		h.logger.InfoContext(ctx, "[", user, "] inbound connection from ", metadata.Source, " max limit reached")
 		conn.Close()
 		return os.ErrInvalid
